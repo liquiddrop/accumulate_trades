@@ -1,5 +1,5 @@
-#include "io.c"
-#include "asset.c"
+#include "asset.h"
+#include "accumulateTrades.h"
 #include <iostream>
 #include <fstream>
 #include <string>           // std::string
@@ -18,67 +18,50 @@ using namespace std;
 //#define debug
 //#define debugSpeed
 
-//Function to look for symbol and add new trade
-void processForOutput(inputInfo* inputTrade, auto result)
-{
-    auto iter=result->find(inputTrade->symbol);
-    //for trade look in results map if an entry exist
-    if (iter == result->end())
-    {
-        //if it doesn't initialize a new entry to results and fill out
-        result->insert(std::make_pair(inputTrade->symbol, std::shared_ptr<asset>(new asset(inputTrade))));
-    }
-    else{
-        //if it exits then process all the new inputs and update values
-        iter->second->addTrade(inputTrade);
-    }
-}
-
 void handleUserInput(std::string userInput)
 {
-    std::map<std::string, std::shared_ptr<inputInfo>> inputData;
-    std::map<std::string, std::shared_ptr<asset>> result;
+    accumulateTrades accumulator;
 
     if(userInput.length()==4 && userInput.compare("test")==0)
     {
         //run test cases and end program after
         //TODO: make this search the directory and run all test*.csv files then output similar named files
-        cout << "testAssetOrder" << endl;
-        inputCsvAndProcess("testAssetOrder.csv", &result);
-        outputResults("testAssetOrderOutput.csv", &result);
-        result.clear();
+	cout << "Running all tests:" << endl;
+	cout << "testAssetOrder" << endl;
+        accumulator.inputCsvToAsset("testAssetOrder.csv");
+        accumulator.outputAssetResults("testAssetOrderOutput.csv");
+        accumulator.clearAssets();
         cout << "testMaxPrice" << endl;
-        inputCsvAndProcess("testMaxPrice.csv", &result);
-        outputResults("testMaxPriceOutput.csv", &result);
-        result.clear();
+        accumulator.inputCsvToAsset("testMaxPrice.csv");
+        accumulator.outputAssetResults("testMaxPriceOutput.csv");
+        accumulator.clearAssets();
         cout << "testTimeGap" << endl;
-        inputCsvAndProcess("testTimeGap.csv", &result);
-        outputResults("testTimeGapOutput.csv", &result);
-        result.clear();
+        accumulator.inputCsvToAsset("testTimeGap.csv");
+        accumulator.outputAssetResults("testTimeGapOutput.csv");
+        accumulator.clearAssets();
         cout << "testVolume" << endl;
-        inputCsvAndProcess("testVolume.csv", &result);
-        outputResults("testVolumeOutput.csv", &result);
-        result.clear();
+        accumulator.inputCsvToAsset("testVolume.csv");
+        accumulator.outputAssetResults("testVolumeOutput.csv");
+        accumulator.clearAssets();
         cout << "testWeightedAveragePrice" << endl;
-        inputCsvAndProcess("testWeightedAveragePrice.csv", &result);
-        outputResults("testWeightedAveragePriceOutput.csv", &result);
-        result.clear();
+        accumulator.inputCsvToAsset("testWeightedAveragePrice.csv");
+        accumulator.outputAssetResults("testWeightedAveragePriceOutput.csv");
     }
     else{
 #ifdef debugSpeed
         auto start = std::chrono::high_resolution_clock::now();
 #endif // debugSpeed
         //if you just want to generate the output
-        inputCsvAndProcess(userInput, &result);
+        accumulator.inputCsvToAsset(userInput);
 
         //if you want to take in the input and do post processing instead of concurrent
-        //inputCsv(userInput, *inputData);
+        //accumulator.inputCsvToTrades(userInput);
 
 #ifdef debug
         cout << "starting output" << endl;
-#endif // debugSpeed
+#endif // debug
         //print the results to output.csv
-        outputResults("output.csv", &result);
+        accumulator.outputAssetResults("output.csv");
 
 #ifdef debugSpeed
         auto stop = std::chrono::high_resolution_clock::now();
@@ -87,9 +70,6 @@ void handleUserInput(std::string userInput)
         cout << "Time taken: "
             << duration.count() << " microseconds" << endl;
 #endif // debugSpeed
-
-        //cleanup results
-        result.clear();
     }
 }
 
@@ -104,7 +84,6 @@ void handleUserInput(std::string userInput)
 
 int main(int argc, char *argv[])
 {
-    cout << "we are in new code" << endl;
     if(argc==1)
     {
         cout << endl;
@@ -116,11 +95,6 @@ int main(int argc, char *argv[])
     }
     if(argc>=2)
     {
-        printf("\nNumber Of Arguments Passed: %d",argc);
-        printf("\n----Following Are The Command Line Arguments Passed----");
-        for(int counter=0;counter<argc;counter++)
-            printf("\nargv[%d]: %s",counter,argv[counter]);
-
         std::string str(argv[1]);
         boost::algorithm::to_lower(str);
         handleUserInput(str);

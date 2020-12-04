@@ -16,6 +16,9 @@
 #include <memory>           // std::shared_ptr
 
 
+#ifndef IO_DEF_H
+#define IO_DEF_H
+
 
 //input <TimeStamp>,<Symbol>,<Quantity>,<Price>
 //To add an input variable just add to struct and boost fusion below
@@ -89,3 +92,5 @@ struct print
     std::cout << t << '\n';
   }
 };
+
+#endif

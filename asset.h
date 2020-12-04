@@ -1,3 +1,4 @@
+#include "io.h"
 #include <iostream>
 #include <fstream>
 #include <string>           // std::string
@@ -9,6 +10,9 @@
 #include <chrono>           // std::chrono
 #include <utility>          // std::pair
 #include <memory>           // std::shared_ptr
+
+#ifndef ASSET_H
+#define ASSET_H
 
 #define defaultSmaPeriod 10
 
@@ -60,7 +64,7 @@ class asset {
         asset(inputInfo* firstTrade);
         ~asset();
         void addTrade(inputInfo* nextTrade);
-        auto getOutput();
+	std::string getOutput();
 
     private:
         std::string symbol;
@@ -76,3 +80,5 @@ class asset {
         unsigned int simpleMovingAverage;
         SMA<defaultSmaPeriod> movingSma;
 };
+
+#endif

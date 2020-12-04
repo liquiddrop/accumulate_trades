@@ -44,7 +44,7 @@ void asset::addTrade(inputInfo* nextTrade)
 
 //function to return the rolling output of the symbol
 //this should return a csv string of the output struct
-auto asset::getOutput()
+std::string asset::getOutput()
 {
     std::string csvOutput;
     std::ostringstream oss;
