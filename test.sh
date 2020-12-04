@@ -1,0 +1,6 @@
+./accumulate_trades test
+diff expectedTestAssetOrderOutput.csv testAssetOrderOutput.csv
+diff expectedTestMaxPriceOutput.csv testMaxPriceOutput.csv
+diff expectedTestTimeGapOutput.csv testTimeGapOutput.csv
+diff expectedTestVolumeOutput.csv testVolumeOutput.csv
+diff expectedTestWeightedAveragePriceOutput.csv testWeightedAveragePriceOutput.csv
